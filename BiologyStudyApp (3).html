@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Biology Study App - Chulalongkorn University</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+    --color-text-primary: #0f172a;
+    --color-text-secondary: #475569;
+    --color-text-tertiary: #94a3b8;
+    --color-background-primary: #ffffff;
+    --color-background-secondary: #f8fafc;
+    --color-background-tertiary: #f1f5f9;
+    --color-border-tertiary: #e2e8f0;
+    --color-border-secondary: #cbd5e1;
+    --color-border-info: #3b82f6;
+    --color-accent: #6366f1;
+  }
+  html, body { min-height: 100vh; background: var(--color-background-secondary); }
+  body { font-family: var(--font-sans); color: var(--color-text-primary); }
+  button { font-family: inherit; }
+  input, select, textarea { font-family: inherit; }
+  #root { min-height: 100vh; }
+  select { outline: none; }
+  input:focus { outline: 2px solid var(--color-border-info); outline-offset: -1px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef } = React;
+
+const KB = `
+=== UNIT 4: CONTINUITY OF LIFE ===
+DNA, CHROMOSOMES, AND GENES: Genome = total DNA of an organism. Eukaryotic DNA is partitioned into chromosomes. Chromatin = DNA + histone proteins + non-histone proteins; lower order of DNA organization. Chromosome = condensed form of chromatin; higher order; only visible during nuclear division (M phase), NOT during interphase. Nucleosome = bead = DNA wrapped around histone core (histone has + charge; DNA has - charge). Levels of organization: DNA double helix → nucleosome (beads on string = chromatin) → solenoid → chromatin loops → rosettes → chromosome. Chromosome identification: 3 features = size, banding pattern, centromere position. Centromere types: metacentric (middle), submetacentric (between middle and end), acrocentric (close to end), telocentric (at end). Chromosome arms: p = short arm; q = long arm. Locus (pl. loci) = location/position of a gene on a chromosome. Locus notation: chromosome# + arm + band (e.g., CFTR gene = 7q31.2; MDD serotonin transporter = SLC6A4 on chromosome 17). Homologous chromosomes: same type, same size, same shape, same gene loci (order), paternal + maternal homolog; may have DIFFERENT alleles; 2 per type in diploid. Karyotype = arranged photograph of all chromosomes; human = 46 chromosomes (23 pairs); determined by size, banding pattern, centromere position. Chromosome number abnormalities: Trisomy 21 = Down syndrome (happy/social but impulsive); Turner (45,X) = socially anxious; Klinefelter (47,XXY) = shy, passive; XYY/Jacobs = impulsive, ADHD risk; Cri du chat = 5p deletion, cat-like cry, behavioral problems.
+
+GENE AND ALLELE: Gene = section of DNA encoding genetic information; written in 4-letter code (A,T,G,C); specifies traits and behaviors; one gene - one trait - one locus. Codon = group of 3 nucleotides; each codon = one amino acid. Reading frame = how nucleotide sequence is divided into codons (where you start matters). Gene expression: DNA → mRNA (transcription) → Protein (translation) → Phenotype. Allele = new version of a gene created by mutation; occupies SAME LOCUS as original gene (not a new gene). Wild-type allele = most common in population. Mutant allele = differs from wild-type (does NOT mean harmful). Mutation types: substitution (changes amino acid), insertion (shifts reading frame), deletion (shifts reading frame). Gene symbol = different letters for different genes (X, Y, Z). Allele symbol = same letter with modifier (A, a, A1, A2, A*). Multiple alleles: many possible alleles at one locus (e.g., rabbit coat color C, c^ch, c^h, c); but diploid organism carries only TWO alleles at a time. Genotype = allele combination an organism carries (AA, Aa, AaBb). Phenotype = observable characteristic = Genotype + Environment. Homozygous = two identical alleles (AA, bb). Heterozygous = two different alleles (Aa, Bb). Dominant does NOT mean better/stronger/more common/healthier; Recessive does NOT mean worse/harmful/rare. These terms only describe how alleles interact in a heterozygote.
+
+CELL DIVISION AND CELL CYCLE: Cell cycle = from when cell is created until it divides into two daughter cells. Cell cycle = M phase (dividing) + Interphase (non-dividing). Interphase = G1 + S + G2 (longest part of cell cycle). G1 phase = primary growth; cell increases in size; synthesizes proteins and organelles (mitochondria, ribosomes, ER, Golgi). S phase = DNA replication; each chromosome replicated forming 2 identical sister chromatids joined at centromere by cohesin; histone synthesis also occurs. G2 phase = final preparation for division; synthesis of mitotic proteins (tubulin for microtubules). G0 = resting/non-dividing phase. M phase = Mitosis (nuclear division) + Cytokinesis (cytoplasm division). Sister chromatids = 2 identical copies of one replicated chromosome; joined at centromere by cohesin; each has its own kinetochore. Centromere = constricted region; kinetochore = protein complex at centromere; attaches to kinetochore microtubules. Homologous chromosomes vs sister chromatids: homologs = paternal and maternal copies of same chromosome (may differ in alleles); sister chromatids = identical copies of one chromosome after replication. Mitosis: 1 division, 2 diploid daughters (growth/repair). Meiosis: 2 divisions, 4 haploid daughters (gametes). Sources of genetic variation: independent assortment (2^23 combinations), crossing over, random fertilization.
+
+MITOSIS PHASES IN DETAIL: Spindle apparatus = bipolar cytoskeletal structure; function = separate chromosomes into daughter cells. 3 types of spindle microtubules (MT): (1) Aster MT, (2) Polar/interpolar MT, (3) Kinetochore MT. MT = polymer of tubulin subunits. Centrosome = MTOC (microtubule organizing center); duplicated during S/G2 phase. Prophase: centrosomes move apart; chromatin condenses into chromosomes; spindle begins forming. Prometaphase: centrosomes reach opposite poles; nuclear envelope BREAKS DOWN; kinetochores form; kinetochore MT attach to chromatids; chromosomes move toward equator. Metaphase: chromosomes MOST condensed; align at metaphase plate; bipolar spindle fully established. Anaphase: sister chromatids SEPARATE (pulled to poles by spindle). Telophase: nuclear envelope REFORMS; chromosomes decondense; spindle disassembles. Cytokinesis: animals = cleavage furrow forms (actin ring pinches inward); plants = cell plate forms from vesicles; each daughter cell receives one centrosome. Gene expression active during interphase (G1, G2); decreases dramatically during mitosis when chromosomes are condensed.
+
+REPRODUCTION: Asexual = genetically identical offspring (binary fission, budding, fragmentation, parthenogenesis). Sexual = genetic variation via gametes. Hermaphroditism: simultaneous or sequential. Protogyny = female to male. Protoandry = male to female. Parthenogenesis = unfertilized egg develops; bees: drones haploid.
+
+MENDELIAN GENETICS: Law of Segregation: alleles separate during gamete formation. Law of Independent Assortment: genes on different chromosomes assort independently. Monohybrid 3:1 phenotype, 1:2:1 genotype. Dihybrid 9:3:3:1. Test cross = cross with homozygous recessive to determine genotype.
+
+DOMINANCE TYPES: Complete: one allele fully masks other. Incomplete: blend phenotype (red x white = pink, 1:2:1). Codominance: both expressed simultaneously (ABO blood group AB). Overdominance: heterozygote advantage (sickle cell). ABO: IA and IB codominant, i recessive. A=IAIA/IAi, B=IBIB/IBi, AB=IAIB, O=ii.
+
+NON-MENDELIAN: Polygenic = multiple genes, continuous variation (height, skin color). Pleiotropy = one gene, multiple traits (sickle cell). Epistasis = one gene masks another (coat color). X-linked recessive more common in males (hemophilia, colorblindness). Y-linked = paternal line only. Genomic imprinting = parent-of-origin expression (Prader-Willi/Angelman). Maternal effect = mother genotype determines offspring phenotype.
+
+=== UNIT 5: EVOLUTION AND DIVERSITY ===
+EVOLUTION: Darwin: natural selection, common descent. Lamarck: use/disuse (wrong). Natural selection requires: variation, heritability, differential reproductive success. Fitness = reproductive success. Adaptation = heritable trait increasing fitness.
+
+HARDY-WEINBERG: Equilibrium if: large population, random mating, no mutation, no migration, no selection. p+q=1; p^2+2pq+q^2=1. Deviations = evolution occurring.
+
+EVOLUTIONARY FORCES: (1) Mutation = source of new alleles. (2) Genetic drift = chance changes; bottleneck effect, founder effect. (3) Gene flow = migration of alleles. (4) Natural selection = differential reproductive success. Three modes: Directional, Stabilizing, Disruptive.
+
+SPECIATION: Biological Species Concept (Mayr): groups that interbreed and produce fertile offspring. Pre-zygotic barriers: habitat, temporal, behavioral, mechanical, gametic. Post-zygotic: hybrid inviability, sterility, breakdown. Allopatric = geographic isolation. Sympatric = polyploidy, habitat differentiation.
+
+BIODIVERSITY: Term coined Walter Rosen 1986. Popularized E.O. Wilson. Three levels: genetic, species, ecosystem. Hotspots (Norman Myers): high endemism + threatened. Endling = last individual of species. IUCN Red List.
+
+TAXONOMY: Linnaeus binomial nomenclature 1753. Genus species (italicized, genus capitalized). Hierarchy: Domain, Kingdom, Phylum, Class, Order, Family, Genus, Species. Priority rule: first valid name wins. Holotype = reference specimen.
+
+PHYLOGENY/CLADISTICS: Willi Hennig founded cladistics. Tree parts: root, nodes, branches, tips. Monophyletic (clade) = ancestor + ALL descendants. Paraphyletic = ancestor + SOME descendants. Polyphyletic = multiple ancestors. Homologous = common ancestry; analogous = convergent evolution.
+
+DIVERSITY OF LIFE: Origin of life 4 stages: abiotic synthesis of monomers, abiotic synthesis of polymers, origin of self-replicating molecules (RNA world), formation of pre-cells (protocells). Prokaryotes: Bacteria (peptidoglycan cell wall) vs Archaea (no peptidoglycan, extremophiles). Shapes: cocci, bacilli, spirochetes. Protists: first eukaryotes; groups include slime molds, dinoflagellates, diatoms, algae, amoeba, Paramecium, Plasmodium (malaria). Plants: alternation of generations; sporophyte (diploid) dominant in vascular plants; gametophyte dominant in bryophytes (mosses). Fungi: heterotrophs by absorption; hyphae and mycelium; chitin cell walls; mushrooms = reproductive structures; decomposers. Animals: Cambrian explosion ~545 mya; key innovations: true tissues, symmetry, body cavities, coelom. Invertebrate phyla: Porifera (sponges, no tissues), Cnidaria (jellyfish, radial, stinging cells, polyp/medusa), Platyhelminthes (flatworms, acoelomate), Nematoda (roundworms, pseudocoelom), Annelida (segmented worms, true coelom), Mollusca (mantle, radula; gastropods/bivalves/cephalopods), Arthropoda (jointed appendages, chitin exoskeleton, molt; largest phylum), Echinodermata (sea stars, water vascular system, marine only). Vertebrates: jawless fish, cartilaginous fish (sharks), bony fish (Osteichthyes), Amphibia (first land vertebrates), Reptilia (amniotic egg, keratin scales), Aves (birds, feathers, endothermic), Mammalia (hair, mammary glands; Monotremata = platypus/echidna; Marsupialia = pouched; Eutheria = placental). Viruses: genome (DNA or RNA) + capsid; host-specific; lytic cycle (replicate and lyse host) vs lysogenic cycle (integrate as prophage). Viroids: naked circular RNA, infect plants. Prions: misfolded proteins, no nucleic acid; cause BSE/CJD; indestructible.
+
+=== UNIT 6: ECOLOGY ===
+LEVELS: Organism, Population, Community, Ecosystem, Biome, Biosphere. Niche: Fundamental = potential range; Realized = actual range (reduced by competition).
+
+BIOMES (terrestrial): Tropical rainforest (high rainfall, most diverse), Savanna (seasonal rainfall), Desert (<30cm/yr), Chaparral (rainy winters/dry summers), Temperate grassland, Temperate deciduous forest, Taiga/Boreal (largest terrestrial biome, conifers), Tundra (permafrost, treeless). Aquatic: Marine (largest overall), Estuaries (high productivity), Freshwater; oligotrophic lakes (nutrient-poor, oxygen-rich) vs eutrophic (nutrient-rich, low oxygen); wetlands (most productive, humans destroyed ~90%).
+
+POPULATION ECOLOGY: Density = number per area. Dispersion: clumped (most common), uniform, random. Survivorship: Type I (late loss, humans), Type II (constant, birds), Type III (early loss, oysters). r-selected: many offspring, little care. K-selected: few offspring, much care. Exponential growth: dN/dt=rN (J-curve). Logistic growth: dN/dt=rN(K-N)/K (S-curve); K=carrying capacity. Density-dependent regulation: competition, predation, disease. Density-independent: climate, disasters.
+
+COMMUNITY ECOLOGY: Competition (-/-), Predation (+/-), Herbivory (+/-), Mutualism (+/+), Commensalism (+/0), Parasitism (+/-), Amensalism (-/0). Competitive exclusion (Gause): two species cannot occupy same niche indefinitely. Batesian mimicry: harmless mimics harmful. Mullerian mimicry: two harmful species resemble each other. Primary succession: bare rock, pioneer species (lichens). Secondary succession: after disturbance, soil present. Coevolution: reciprocal adaptation.
+
+ECOSYSTEM ECOLOGY: 10% rule: only ~10% energy transfers between trophic levels. Carbon cycle: photosynthesis fixes CO2; respiration/decomposition/combustion release CO2. Nitrogen cycle: N2 fixation (Rhizobium), nitrification, denitrification. Phosphorus cycle: weathering, no atmospheric component. Ecosystem services: provisioning, regulating, cultural, supporting.
+
+=== UNIT 7: ANIMAL BEHAVIOR ===
+TINBERGEN'S 4 QUESTIONS: (1) Causation/mechanism (proximate), (2) Development/ontogeny (proximate), (3) Function/adaptive value (ultimate), (4) Evolution/phylogeny (ultimate).
+
+INNATE BEHAVIOR: Fixed action patterns (FAPs) = stereotyped, species-specific, triggered by sign stimulus (releaser); once initiated, carried to completion. Examples: goose egg retrieval, stickleback red belly attack, gull chick pecking. fru gene (Drosophila): controls male courtship; expressed only in males; mutant males fail to court; females expressing fru court other females. fosB gene (mice): essential for maternal behavior (nest building, pup retrieval, licking, nursing); activated in preoptic area of hypothalamus by presence of pups; encodes AP-1 transcription factor. Disadvantages: inflexible, vulnerable to exploitation (cuckoo brood parasitism; femme fatale firefly), costly genetic mistakes.
+
+NON-ASSOCIATIVE LEARNING: Habituation = decreased response to repeated harmless stimulus; simplest form of learning. Characteristics: stimulus-specific, spontaneous recovery, dishabituation (new stimulus restores response; rules out sensory adaptation/fatigue), stimulus generalization, stimulus discrimination. Sensitization = increased response after noxious stimulus (opposite of habituation). H3NO (hypoxanthine-3-N-oxide) = alarm pheromone of minnows. Fantz (1964): infants look less at familiar, more at novel = habituation demonstrated.
+
+NEUROSCIENCE: Aplysia californica (Eric Kandel, Nobel 2000). Gill-withdrawal reflex: 24 sensory neurons, 6 motor neurons, serotonergic interneurons. Habituation mechanism: less glutamate released; vesicle depletion + Ca2+ channel inactivation. Sensitization mechanism: tail shock, serotonin, cAMP, PKA, closes K+ channels, more Ca2+ entry, more vesicle fusion, more glutamate. Long-term memory: repeated shocks, CREB-1 transcription factor, new protein synthesis, growth of new synaptic boutons and dendritic spines. LTP (Terje Lomo): NMDA receptor = coincidence detector; AMPA receptors increase; structural changes.
+
+ASSOCIATIVE LEARNING: Classical conditioning (Pavlov): NS+UCS->UCR; NS becomes CS->CR. Extinction: CS without UCS reduces CR (not erasure). Spontaneous recovery, renewal, reinstatement. Operant conditioning (Skinner): Positive reinforcement (add pleasant, UP), Negative reinforcement (remove unpleasant, UP), Positive punishment (add unpleasant, DOWN), Negative punishment (remove pleasant, DOWN).
+
+IMPRINTING: Filial imprinting (Lorenz): critical period; geese 13-16 hours after hatching. Types: filial, sexual, song, olfactory, habitat. Zebra finch: cross-fostered finches sing Bengalese finch song with zebra finch accent. LF neurons = encode syllable morphology = experience-dependent. HF neurons = encode temporal gaps = innate, species-specific. Baby duck syndrome = preference for first system learned.
+
+SEXUAL SELECTION: Intersexual = mate choice (female chooses). Intrasexual = same-sex competition. Good genes hypothesis: ornaments are honest signals of quality. Fisherian runaway: trait and preference coevolve, increasingly exaggerated. Sexy son hypothesis: choose attractive males so sons inherit attractive traits. Mate-choice copying: social learning; copy others' mate choices.
+
+COGNITION: DMTS (Delayed Match-to-Sample): honeybees match colors after delay = working memory and concept formation. Insight learning (Kohler): chimpanzee Sultan stacked boxes to reach banana without trial-and-error.
+`;
+
+const TOPICS = [
+  { id: "all", label: "All Topics", short: "ALL" },
+  { id: "u4",  label: "Continuity of Life",    short: "U4"  },
+  { id: "u5",  label: "Evolution & Diversity",  short: "U5"  },
+  { id: "u6",  label: "Life & Environment",     short: "U6"  },
+  { id: "u7",  label: "Animal Behavior",        short: "U7"  },
+  { id: "app", label: "Application",             short: "APP" },
+];
+
+const TOPIC_COLORS = {
+  all: "#6366f1", u4: "#0891b2", u5: "#16a34a", u6: "#b45309", u7: "#7c3aed", app: "#e11d48",
+};
+
+const TOPIC_CONTEXT = {
+  u4: KB.split("=== UNIT 5")[0],
+  u5: "=== UNIT 5" + KB.split("=== UNIT 5")[1].split("=== UNIT 6")[0],
+  u6: "=== UNIT 6" + KB.split("=== UNIT 6")[1].split("=== UNIT 7")[0],
+  u7: "=== UNIT 7" + KB.split("=== UNIT 7")[1],
+};
+
+TOPIC_CONTEXT.app = KB; // Application draws from all units
+
+const TOPIC_SUBSECTIONS = {
+  u4: [
+    { name: "DNA, Chromosomes, and Genes", focus: "Genome = total DNA. Chromatin = DNA + histone proteins; lower order organization. Chromosome = condensed chromatin; higher order; visible ONLY during M phase (nuclear division), NOT during interphase. Nucleosome = bead = DNA wrapped around histone core (histone +charge, DNA -charge). Organization levels: DNA double helix, nucleosome (beads on string = chromatin), solenoid, chromatin loops, rosettes, chromosome. 3 features to identify chromosomes: size, banding pattern, centromere position. Centromere types: metacentric (middle), submetacentric (between middle and end), acrocentric (close to end), telocentric (at end). Arms: p = short arm; q = long arm. Locus notation: chromosome# + arm + band (e.g., CFTR/cystic fibrosis = 7q31.2; MDD serotonin transporter SLC6A4 = chromosome 17). Homologous chromosomes: same type, same size, same loci order, paternal + maternal homolog; may have DIFFERENT alleles; 2 per type in diploid. Human karyotype = 46 chromosomes (23 pairs). Chromosome number abnormalities: Trisomy 21 = Down syndrome; Turner (45,X) = socially anxious; Klinefelter (47,XXY) = shy/passive; Jacobs/XYY = impulsive/ADHD; Cri du chat = 5p deletion, cat-like cry, behavioral problems." },
+    { name: "Gene, Allele, and Genotype Terminology", focus: "Gene = section of DNA; specifies traits and behaviors; one gene - one trait - one locus. Codon = 3 nucleotides = one amino acid. Reading frame = how nucleotide sequence is divided into codons; where you START reading matters. Gene expression: DNA (transcription) mRNA (translation) Protein = Phenotype. Allele = version of gene created by mutation; occupies SAME LOCUS as original (NOT a new gene, just new version). Wild-type allele = most common in population. Mutant allele = differs from wild-type (does NOT mean harmful, just means different). Mutation types: substitution (changes single nucleotide = may change one amino acid), insertion (frameshift), deletion (frameshift). Gene symbols: different letters for different genes (X, Y, Z at different loci). Allele symbols: same letter with modifier (A, a, A1, A2, A*). Multiple alleles: many possible versions at one locus (e.g., rabbit coat color C, c^ch, c^h, c) but diploid organism carries only TWO alleles at a time. Genotype = allele combination (AA, Aa, AaBb). Phenotype = observable = Genotype + Environment. Homozygous = 2 identical alleles (AA, bb). Heterozygous = 2 different alleles (Aa, Bb). CRITICAL: Dominant does NOT mean better/stronger/more common; Recessive does NOT mean worse/harmful/rare. These terms ONLY describe how alleles interact in a heterozygote." },
+    { name: "Cell Cycle and Mitosis Mechanism", focus: "Cell cycle = from cell creation until division into 2 daughter cells. Cell cycle = M phase (dividing) + Interphase (non-dividing). Interphase = G1 + S + G2 (longest part of cell cycle). G1 phase: primary growth; cell enlarges; synthesizes proteins and organelles (mitochondria, ribosomes). S phase: DNA replication; sister chromatids form (joined at centromere by cohesin proteins); histone synthesis. G2 phase: final preparation; synthesizes mitotic proteins (tubulin for microtubules). G0 = resting/non-dividing. M phase = Mitosis + Cytokinesis. Sister chromatids = 2 identical copies of replicated chromosome joined at centromere by cohesin; each has own kinetochore. Centromere = constricted region; kinetochore = protein complex at centromere; attaches to kinetochore microtubules during mitosis. Spindle apparatus: bipolar; 3 MT types = aster MT, polar/interpolar MT, kinetochore MT; MT = tubulin polymer; centrosome = MTOC. Mitosis phases: Prophase (centrosomes move apart, chromatin condenses, spindle begins). Prometaphase (centrosomes at poles, nuclear envelope BREAKS DOWN, kinetochore MT attach to chromatids, chromosomes move to equator). Metaphase (maximum condensation, chromosomes align at metaphase plate, bipolar spindle complete). Anaphase (sister chromatids SEPARATE, pulled to opposite poles). Telophase (nuclear envelope REFORMS, chromosomes decondense, spindle disassembles). Cytokinesis: animals = cleavage furrow (actin ring pinches); plants = cell plate (vesicles fuse). Gene expression active in G1/G2; decreases dramatically during mitosis when chromosomes are condensed." },
+    { name: "Mitosis vs Meiosis",           focus: "Mitosis: 1 division, 2 diploid daughters, growth/repair. Meiosis: 2 divisions, 4 haploid daughters, gametes. Meiosis I = reduction (synapsis, crossing over, homologs separate); Meiosis II = equational (chromatids separate). Sources of variation: independent assortment (2^23 combos), crossing over, random fertilization." },
+    { name: "Reproduction Types",           focus: "Asexual: binary fission, budding, fragmentation, parthenogenesis (bees: drones haploid). Sexual: gametes, genetic variation. Hermaphroditism: simultaneous vs sequential. Protogyny = female to male. Protoandry = male to female." },
+    { name: "Mendelian Genetics",           focus: "Law of Segregation (1st): alleles separate during gamete formation. Law of Independent Assortment (2nd): genes on different chromosomes assort independently. Monohybrid 3:1 phenotype, 1:2:1 genotype. Dihybrid 9:3:3:1. Test cross = cross with homozygous recessive to find unknown genotype." },
+    { name: "Dominance and ABO Blood",      focus: "Complete dominance: dominant masks recessive. Incomplete dominance: blend phenotype, 1:2:1 (red x white = pink). Codominance: both expressed simultaneously (AB blood type). Overdominance: heterozygote advantage (sickle cell malaria resistance). ABO: IA and IB codominant, i recessive. A=IAIA/IAi; B=IBIB/IBi; AB=IAIB; O=ii." },
+    { name: "Non-Mendelian Inheritance",    focus: "Polygenic: multiple genes, continuous variation (height, skin color). Pleiotropy: one gene, multiple traits (sickle cell). Epistasis: one gene masks another (Labrador coat color). X-linked recessive more common in males (hemophilia, colorblindness). Y-linked = paternal line only. Genomic imprinting: Prader-Willi (paternal deletion) vs Angelman (maternal deletion). Maternal effect: mother genotype determines offspring phenotype." },
+  ],
+  u5: [
+    { name: "Natural Selection and Evidence", focus: "Darwin: natural selection, common descent. Lamarck: use/disuse (wrong). Requirements: variation, heritability, differential reproductive success. Fitness = reproductive success. Evidence: fossils, homologous structures (common ancestry) vs analogous (convergent evolution), molecular biology." },
+    { name: "Hardy-Weinberg and Evolutionary Forces", focus: "H-W equilibrium: large population, random mating, no mutation, no migration, no selection. p+q=1; p^2+2pq+q^2=1. Four forces: (1) Mutation = new alleles; (2) Genetic drift = chance (bottleneck effect, founder effect); (3) Gene flow = migration; (4) Natural selection = directional, stabilizing, disruptive." },
+    { name: "Speciation",                   focus: "Biological Species Concept (Mayr): groups that interbreed and produce fertile offspring. Pre-zygotic barriers: habitat, temporal, behavioral, mechanical, gametic. Post-zygotic: hybrid inviability, sterility, breakdown. Allopatric = geographic isolation. Sympatric = polyploidy (allopolyploidy in wheat Triticum aestivum)." },
+    { name: "Biodiversity and Taxonomy",    focus: "Biodiversity: Walter Rosen 1986, E.O. Wilson. Three levels: genetic, species, ecosystem. Hotspots (Norman Myers): high endemism + threatened. Endling = last individual. IUCN Red List. Linnaeus binomial nomenclature: Genus species, italicized. Hierarchy: Domain-Kingdom-Phylum-Class-Order-Family-Genus-Species. Priority rule. Holotype = reference specimen." },
+    { name: "Phylogeny and Cladistics",     focus: "Willi Hennig founded cladistics. Tree parts: root, nodes, branches, tips. Monophyletic (clade) = ancestor + ALL descendants, supported by synapomorphies. Paraphyletic = ancestor + SOME descendants. Polyphyletic = multiple ancestors (homoplasy/convergent evolution). Homologous = common ancestry; analogous = convergent evolution." },
+    { name: "Diversity of Life",            focus: "Origin of life 4 stages: abiotic monomers, abiotic polymers, self-replicating RNA (RNA world), pre-cells. Bacteria (peptidoglycan) vs Archaea (no peptidoglycan, extremophiles). Protists: first eukaryotes; slime molds, dinoflagellates, diatoms, algae, Paramecium, Plasmodium. Plants: alternation of generations (sporophyte dominant in vascular; gametophyte dominant in bryophytes). Fungi: hyphae/mycelium, chitin, decomposers. Animals: Cambrian explosion ~545 mya. Invertebrate phyla: Porifera, Cnidaria, Platyhelminthes, Nematoda, Annelida, Mollusca, Arthropoda (largest), Echinodermata. Vertebrates: jawless fish, cartilaginous fish, bony fish, Amphibia, Reptilia, Aves, Mammalia (Monotremata/Marsupialia/Eutheria). Viruses: lytic vs lysogenic. Viroids: naked RNA. Prions: misfolded proteins, no nucleic acid." },
+  ],
+  u6: [
+    { name: "Ecology Levels and Biomes",    focus: "Levels: Organism, Population, Community, Ecosystem, Biome, Biosphere. Niche: fundamental (potential) vs realized (actual, reduced by competition). Eight terrestrial biomes: tropical rainforest, savanna, desert, chaparral, temperate grassland, temperate deciduous forest, taiga/boreal (largest terrestrial), tundra (permafrost). Aquatic: marine (largest overall), estuaries (most productive), freshwater, wetlands (humans destroyed ~90%), coral reefs, intertidal, oceanic pelagic, benthic/hydrothermal vents." },
+    { name: "Population Ecology",           focus: "Density = number per area. Dispersion: clumped (most common), uniform, random. Survivorship: Type I (late loss, humans), Type II (constant, birds), Type III (early loss, oysters). r-selected: many offspring, little care, unstable environments. K-selected: few offspring, much care, stable environments. Exponential growth: dN/dt=rN, J-curve. Logistic: dN/dt=rN(K-N)/K, S-curve; K=carrying capacity. Density-dependent: competition, predation, disease. Density-independent: climate, disasters." },
+    { name: "Community Ecology",            focus: "Competition (-/-): competitive exclusion (Gause), resource partitioning, character displacement. Predation (+/-): predator-prey cycles. Herbivory (+/-). Mutualism (+/+). Commensalism (+/0). Parasitism (+/-). Amensalism (-/0). Batesian mimicry: harmless mimics harmful. Mullerian mimicry: two harmful species resemble each other. Keystone species: disproportionate effect. Primary succession: bare rock, pioneer species (lichens). Secondary succession: disturbed area with soil. Coevolution." },
+    { name: "Ecosystem Ecology",            focus: "10% rule: only ~10% energy transfers between trophic levels. Carbon cycle: photosynthesis fixes CO2; respiration/decomposition/combustion release CO2. Nitrogen cycle: N2 fixation (Rhizobium), nitrification, denitrification. Phosphorus cycle: weathering, no atmospheric component. Ecosystem services: provisioning, regulating, cultural, supporting." },
+  ],
+  u7: [
+    { name: "Tinbergen's 4 Questions and FAPs", focus: "Tinbergen: (1) Causation/mechanism (proximate HOW), (2) Development/ontogeny (proximate HOW develops), (3) Function/adaptive value (ultimate WHY), (4) Evolution/phylogeny (ultimate WHY evolved). FAPs: stereotyped, species-specific, sign stimulus via IRM, carried to completion even if stimulus removed. Examples: goose egg retrieval, stickleback red belly, gull chick pecking. fru gene (Drosophila): controls male courtship; females with fru court other females. fosB gene (mice): maternal behavior (nesting, pup retrieval, nursing); preoptic area hypothalamus; AP-1 transcription factor." },
+    { name: "Advantages and Disadvantages of Innate Behavior", focus: "Advantages: (1) Immediate survival at birth; (2) Speed (bypasses higher brain centers); (3) Reliable in stable environments; (4) Prevents hybridization (species-specific courtship). Disadvantages: (1) Inflexible, cannot adapt; (2) Vulnerable to exploitation (cuckoo brood parasitism, femme fatale firefly mimics flash pattern); (3) Costly genetic mistakes (fosB mutation = pups die, genetic line ends); (4) Incompatible with complex environments." },
+    { name: "Habituation and Sensitization", focus: "Non-associative learning = response change without pairing two stimuli. Habituation: decreased response to repeated harmless stimulus; simplest form of learning. Characteristics: stimulus-specific, spontaneous recovery, dishabituation (new stimulus restores response; rules out sensory adaptation and effector fatigue), stimulus generalization, stimulus discrimination. H3NO (hypoxanthine-3-N-oxide) = minnow alarm pheromone; disrupts habituation. Fantz 1964: infants look less at familiar, more at novel = habituation demonstrated. Sensitization: INCREASED response after noxious stimulus (opposite of habituation)." },
+    { name: "Aplysia Neuroscience",         focus: "Aplysia californica: Eric Kandel Nobel 2000. Gill-withdrawal reflex: 24 sensory neurons, 6 motor neurons, serotonergic interneurons. Habituation: less glutamate released; vesicle depletion + Ca2+ channel inactivation. Sensitization: tail shock, serotonin, cAMP, PKA, closes K+ channels, more Ca2+, more vesicle fusion, more glutamate. Long-term memory: repeated shocks, CREB-1 transcription factor, new protein synthesis, new synaptic boutons and dendritic spines; blocked by protein synthesis inhibitors. LTP (Terje Lomo): NMDA receptor = coincidence detector; AMPA receptors increase." },
+    { name: "Associative Learning and Imprinting", focus: "Classical conditioning (Pavlov): NS+UCS->UCR; NS becomes CS->CR. Extinction: CS without UCS reduces CR (not erasure). Spontaneous recovery, renewal, reinstatement. Operant (Skinner): Positive reinforcement (add pleasant, UP), Negative reinforcement (remove unpleasant, UP), Positive punishment (add unpleasant, DOWN), Negative punishment (remove pleasant, DOWN). Filial imprinting (Lorenz): critical period; geese 13-16 hours. LF neurons = syllable morphology = experience-dependent. HF neurons = temporal gaps = innate, species-specific. Baby duck syndrome = preference for first system learned." },
+    { name: "Sexual Selection and Cognition", focus: "Intersexual = mate choice (female chooses). Intrasexual = same-sex competition. Good genes hypothesis: ornaments = honest signals. Fisherian runaway: trait and preference coevolve, increasingly exaggerated. Sexy son hypothesis: choose attractive males so sons inherit attractive traits. Mate-choice copying: copy others' mate choices. DMTS (Delayed Match-to-Sample): honeybees match colors after delay = working memory + concept formation. Insight learning (Kohler): Sultan stacked boxes to reach banana without trial-and-error." },
+  ],
+  app: [
+    { name: "Application: Cross-Unit Reasoning", focus: "Apply concepts across all units. Scenario-based questions integrating multiple topics. Examples: a trait showing 9:3:3:1 ratio (dihybrid), a population deviating from Hardy-Weinberg (identify which force), identifying type of mimicry in a scenario, determining lytic vs lysogenic cycle outcome, classifying an organism into its phylum, predicting survivorship curve type for a species, identifying type of conditioning in a real-world scenario, applying Tinbergen's 4 questions to a behavior, connecting Aplysia mechanisms to human memory, identifying ecosystem service type." },
+  ],
+};
+
+function getSubsections(topicId) {
+  if (topicId === "all") return Object.values(TOPIC_SUBSECTIONS).flat();
+  return TOPIC_SUBSECTIONS[topicId] || [];
+}
+
+function topicKB(id) { return id === "all" ? KB : (TOPIC_CONTEXT[id] || KB); }
+
+async function callClaude(prompt, system) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 2000,
+      system: system || "You are a biology tutor. Answer strictly based on the provided lecture content.",
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || "Error.";
+}
+
+async function genMCQ(topicId, n) {
+  const appNote = topicId === "app" ? "Focus on APPLICATION questions: scenario-based, multi-concept integration, real-world examples, and questions requiring reasoning across multiple topics. " : "";
+  const text = await callClaude(
+    `${appNote}Generate exactly ${n} multiple choice questions from this biology content. Return ONLY valid JSON array, no markdown:\n[{"q":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"answer":"A","section":"topic name","explanation":"brief why"}]\n\nContent:\n${topicKB(topicId)}`,
+    "Return only a valid JSON array. No markdown, no explanation."
+  );
+  try { return JSON.parse(text.replace(/```json|```/g,"").trim()); } catch { return []; }
+}
+
+async function genFlashcards(topicId) {
+  const text = await callClaude(
+    `Generate 10 flashcards from this biology content. Return ONLY valid JSON array:\n[{"front":"term or question","back":"definition or answer"}]\n\nContent:\n${topicKB(topicId)}`,
+    "Return only a valid JSON array. No markdown."
+  );
+  try { return JSON.parse(text.replace(/```json|```/g,"").trim()); } catch { return []; }
+}
+
+// ── CSS ─────────────────────────────────────────────────────────────────────
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap');
+  .app-title { font-family: 'Playfair Display', Georgia, serif; }
+  .card-hover { transition: box-shadow 0.15s, transform 0.15s; cursor: pointer; }
+  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+  .chip { display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;border:1.5px solid transparent;user-select:none; }
+  .chip:hover { opacity:0.85; }
+  .opt-btn { width:100%;text-align:left;padding:11px 16px;border-radius:10px;border:1.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;font-size:14px;transition:all 0.12s;display:flex;align-items:flex-start;gap:10px; }
+  .opt-btn:hover { border-color:var(--color-border-secondary);background:var(--color-background-secondary); }
+  .opt-correct { background:#dcfce7 !important;border-color:#16a34a !important; }
+  .opt-wrong   { background:#fee2e2 !important;border-color:#dc2626 !important; }
+  .flip-card { perspective:800px;cursor:pointer; }
+  .flip-inner { transition:transform 0.5s;transform-style:preserve-3d;position:relative; }
+  .flip-inner.flipped { transform:rotateY(180deg); }
+  .flip-face { backface-visibility:hidden;-webkit-backface-visibility:hidden; }
+  .flip-back { transform:rotateY(180deg); }
+  .chat-bubble-user { background:var(--color-background-secondary);border-radius:14px 14px 4px 14px;padding:10px 14px;max-width:85%;align-self:flex-end;font-size:14px; }
+  .chat-bubble-ai   { background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:14px 14px 14px 4px;padding:10px 14px;max-width:85%;align-self:flex-start;font-size:14px;line-height:1.6; }
+  .progress-bar  { height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden; }
+  .progress-fill { height:100%;border-radius:3px;transition:width 0.3s; }
+  .back-btn { background:none;border:0.5px solid var(--color-border-secondary);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--color-text-secondary);transition:all 0.12s; }
+  .back-btn:hover { background:var(--color-background-secondary); }
+  .mode-card { background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:16px;padding:24px 20px;display:flex;flex-direction:column;gap:8px; }
+  .action-btn { padding:10px 20px;border-radius:10px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.12s; }
+  .action-btn:active { transform:scale(0.97); }
+  .topic-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px; }
+`;
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function Spinner({ msg }) {
+  return (
+    <div style={{ textAlign:"center", padding:"60px 20px" }}>
+      <div style={{ fontSize:32, marginBottom:12 }}>✨</div>
+      <p style={{ color:"var(--color-text-secondary)", fontSize:14 }}>{msg || "Generating..."}</p>
+    </div>
+  );
+}
+
+function Header({ title, subtitle, color, onBack, onAction, actionLabel }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:24 }}>
+      <button className="back-btn" onClick={onBack}>Back</button>
+      <div style={{ flex:1 }}>
+        <h2 style={{ margin:0, fontSize:17, fontWeight:500 }}>{title}</h2>
+        {subtitle && <p style={{ margin:0, fontSize:12, color:"var(--color-text-secondary)" }}>{subtitle}</p>}
+      </div>
+      {onAction && (
+        <button className="action-btn" onClick={onAction}
+          style={{ background:color, color:"#fff", fontSize:12, padding:"7px 14px" }}>
+          {actionLabel}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── HOME ─────────────────────────────────────────────────────────────────────
+function HomeView({ view, setView, topic, setTopic }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const modes = [
+    { id:"studyall",   icon:"🔬", title:"Study All",          desc:"Exhaustive MCQ drill per lecture section. ~8 questions each, instant feedback, results by section.", badge:"Deep Study" },
+    { id:"flashcards", icon:"🃏", title:"Flashcards",           desc:"AI flip-cards. Drill key definitions and distinctions.",      badge:"Study"    },
+    { id:"mcq",        icon:"🎯", title:"MCQ Practice",         desc:"10 AI questions with instant feedback and explanations.",     badge:"Practice" },
+    { id:"exam",       icon:"📝", title:"Full Exam Simulator",  desc:"96 questions weighted 19/29/19/29/4. No feedback until end.", badge:"Exam"     },
+    { id:"summary",    icon:"📋", title:"Quick Summary",        desc:"AI key-point summary. Great for last-minute revision.",      badge:"Review"   },
+    { id:"chat",       icon:"💬", title:"Ask Claude",           desc:"Free-form Q&A strictly grounded in your lecture slides.",    badge:"Q&A"      },
+  ];
+  return (
+    <div style={{ maxWidth:680, margin:"0 auto", padding:"32px 20px 40px" }}>
+      <div style={{ marginBottom:28 }}>
+        <p style={{ fontSize:12, color:"var(--color-text-tertiary)", margin:"0 0 4px", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+          Intro to Biology -- Chulalongkorn University
+        </p>
+        <h1 className="app-title" style={{ fontSize:28, margin:"0 0 6px", color:"var(--color-text-primary)", fontWeight:700 }}>
+          Biology Study App
+        </h1>
+        <p style={{ fontSize:14, color:"var(--color-text-secondary)", margin:0 }}>
+          Units 4-7 -- AI-powered revision strictly based on your lecture slides.
+        </p>
+      </div>
+
+      {/* topic chips */}
+      <div style={{ marginBottom:28 }}>
+        <p style={{ fontSize:12, fontWeight:500, color:"var(--color-text-secondary)", margin:"0 0 10px", textTransform:"uppercase", letterSpacing:"0.06em" }}>
+          Select Focus Topic
+        </p>
+        <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+          {TOPICS.map(t => {
+            const active = topic === t.id;
+            const c = TOPIC_COLORS[t.id];
+            return (
+              <button key={t.id} className="chip" onClick={() => setTopic(t.id)}
+                style={{ background:active?c:"var(--color-background-secondary)", color:active?"#fff":"var(--color-text-secondary)", borderColor:active?c:"var(--color-border-tertiary)" }}>
+                {t.short}
+              </button>
+            );
+          })}
+        </div>
+        <p style={{ fontSize:12, color:"var(--color-text-tertiary)", margin:"8px 0 0" }}>
+          Studying: <strong style={{ color:"var(--color-text-primary)" }}>{TOPICS.find(t=>t.id===topic)?.label}</strong>
+        </p>
+      </div>
+
+      {/* exam allocation banner */}
+      <div style={{ marginBottom:28, background:"var(--color-background-secondary)", borderRadius:14, padding:"14px 16px" }}>
+        <p style={{ fontSize:11, fontWeight:600, color:"var(--color-text-tertiary)", margin:"0 0 10px", textTransform:"uppercase", letterSpacing:"0.07em" }}>
+          Exam Allocation (100 pts = 40% of grade)
+        </p>
+        <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
+          {[["Continuity of Life","19","#0891b2"],["Evolution & Diversity","29","#16a34a"],["Life & Environment","19","#b45309"],["Animal Behavior","29","#7c3aed"],["Application","4","#6366f1"]].map(([l,n,c])=>(
+            <div key={l} style={{ display:"flex", alignItems:"center", gap:6, background:"var(--color-background-primary)", borderRadius:8, padding:"5px 10px", border:"0.5px solid var(--color-border-tertiary)" }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:c }} />
+              <span style={{ fontSize:12, color:"var(--color-text-secondary)" }}>{l}</span>
+              <strong style={{ fontSize:12, color:c }}>{n}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* mode cards grid */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))", gap:12 }}>
+        {modes.map(m => (
+          <div key={m.id} className="mode-card card-hover" onClick={() => setView(m.id)}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+              <span style={{ fontSize:26 }}>{m.icon}</span>
+              <span style={{ fontSize:10, fontWeight:500, padding:"3px 8px", borderRadius:6, background:"var(--color-background-secondary)", color:"var(--color-text-secondary)" }}>{m.badge}</span>
+            </div>
+            <h3 style={{ margin:0, fontSize:15, fontWeight:500, color:"var(--color-text-primary)" }}>{m.title}</h3>
+            <p style={{ margin:0, fontSize:12, color:"var(--color-text-secondary)", lineHeight:1.5 }}>{m.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* topics list */}
+      <div style={{ marginTop:28, background:"var(--color-background-secondary)", borderRadius:14, padding:"18px 20px" }}>
+        <p style={{ fontSize:12, fontWeight:500, color:"var(--color-text-secondary)", margin:"0 0 12px", textTransform:"uppercase", letterSpacing:"0.06em" }}>Course Topics</p>
+        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          {TOPICS.filter(t=>t.id!=="all").map(t=>(
+            <div key={t.id} style={{ display:"flex", alignItems:"flex-start", gap:10, cursor:"pointer" }} onClick={()=>setTopic(t.id)}>
+              <div className="topic-dot" style={{ background:TOPIC_COLORS[t.id] }} />
+              <span style={{ fontSize:13, color:"var(--color-text-primary)" }}>{t.label}</span>
+              <span style={{ fontSize:11, color:"var(--color-text-tertiary)", marginLeft:"auto" }}>{t.short}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── FLASHCARDS ───────────────────────────────────────────────────────────────
+function FlashcardsView({ topic, onBack }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const [cards, setCards] = useState([]);
+  const [idx,  setIdx]   = useState(0);
+  const [flip, setFlip]  = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function load() {
+    setLoading(true); setCards([]); setIdx(0); setFlip(false);
+    const c = await genFlashcards(topic);
+    setCards(c); setLoading(false);
+  }
+
+  const card = cards[idx];
+  const topicLabel = TOPICS.find(t=>t.id===topic)?.label;
+
+  return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <Header title="Flashcards" subtitle={topicLabel} color={col} onBack={onBack}
+        onAction={load} actionLabel={loading ? "Generating..." : cards.length ? "New Set" : "Generate"} />
+
+      {loading && <Spinner msg="Generating flashcards from your lecture notes..." />}
+
+      {!loading && !cards.length && (
+        <div style={{ textAlign:"center", padding:"40px 0", color:"var(--color-text-secondary)" }}>
+          Click Generate to create flashcards.
+        </div>
+      )}
+
+      {!loading && card && (
+        <>
+          <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"var(--color-text-secondary)", marginBottom:8 }}>
+            <span>Card {idx+1} of {cards.length}</span><span>Click to flip</span>
+          </div>
+          <div className="progress-bar" style={{ marginBottom:20 }}>
+            <div className="progress-fill" style={{ width:`${((idx+1)/cards.length)*100}%`, background:col }} />
+          </div>
+
+          <div className="flip-card" style={{ height:240, marginBottom:20 }} onClick={()=>setFlip(f=>!f)}>
+            <div className={`flip-inner${flip?" flipped":""}`} style={{ width:"100%", height:"100%" }}>
+              <div className="flip-face" style={{ position:"absolute", width:"100%", height:"100%", background:"var(--color-background-primary)", border:`2px solid ${col}`, borderRadius:16, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"24px 28px", boxSizing:"border-box", textAlign:"center" }}>
+                <div style={{ fontSize:10, fontWeight:500, color:col, textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>Concept</div>
+                <p style={{ fontSize:17, fontWeight:500, margin:0, lineHeight:1.5, color:"var(--color-text-primary)" }}>{card.front}</p>
+              </div>
+              <div className="flip-face flip-back" style={{ position:"absolute", width:"100%", height:"100%", background:col, borderRadius:16, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"24px 28px", boxSizing:"border-box", textAlign:"center" }}>
+                <div style={{ fontSize:10, fontWeight:500, color:"rgba(255,255,255,0.7)", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>Answer</div>
+                <p style={{ fontSize:15, margin:0, lineHeight:1.6, color:"#fff" }}>{card.back}</p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display:"flex", gap:10 }}>
+            <button className="action-btn" onClick={()=>{setIdx(i=>Math.max(0,i-1));setFlip(false);}} disabled={idx===0}
+              style={{ flex:1, background:"var(--color-background-secondary)", color:"var(--color-text-primary)", border:"0.5px solid var(--color-border-tertiary)" }}>
+              Previous
+            </button>
+            <button className="action-btn" onClick={()=>{setIdx(i=>Math.min(cards.length-1,i+1));setFlip(false);}} disabled={idx===cards.length-1}
+              style={{ flex:1, background:col, color:"#fff" }}>
+              Next
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ── MCQ PRACTICE ─────────────────────────────────────────────────────────────
+function MCQView({ topic, onBack }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const [qs, setQs]         = useState([]);
+  const [idx, setIdx]       = useState(0);
+  const [sel, setSel]       = useState(null);
+  const [score, setScore]   = useState(0);
+  const [done, setDone]     = useState(false);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function load() {
+    setLoading(true); setQs([]); setIdx(0); setSel(null); setScore(0); setDone(false); setResults([]);
+    const q = await genMCQ(topic, 10);
+    setQs(q); setLoading(false);
+  }
+
+  function pick(opt) {
+    if (sel) return;
+    const q = qs[idx];
+    const ok = opt === q.answer;
+    setSel(opt);
+    if (ok) setScore(s=>s+1);
+    setResults(r=>[...r,{ q:q.q, sel:opt, correct:q.answer, ok, explanation:q.explanation }]);
+  }
+
+  function next() {
+    if (idx+1>=qs.length) setDone(true);
+    else { setIdx(i=>i+1); setSel(null); }
+  }
+
+  const topicLabel = TOPICS.find(t=>t.id===topic)?.label;
+  const q = qs[idx];
+  const pct = Math.round((score/10)*100);
+
+  if (loading) return <div style={{ maxWidth:600,margin:"0 auto",padding:"28px 20px" }}><Header title="MCQ Practice" subtitle={topicLabel} color={col} onBack={onBack} /><Spinner msg="Generating 10 questions..." /></div>;
+
+  if (!qs.length) return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <Header title="MCQ Practice" subtitle={topicLabel} color={col} onBack={onBack} />
+      <button className="action-btn" onClick={load} style={{ background:col, color:"#fff", width:"100%" }}>Generate Questions</button>
+    </div>
+  );
+
+  if (done) return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <Header title="MCQ Practice" subtitle={topicLabel} color={col} onBack={onBack} />
+      <div style={{ textAlign:"center", padding:"24px 0 20px" }}>
+        <div style={{ fontSize:48, marginBottom:8 }}>{pct>=80?"🏆":pct>=60?"👍":"📚"}</div>
+        <h3 style={{ fontSize:22, margin:"0 0 4px", fontWeight:600 }}>{score}/10 Correct</h3>
+        <p style={{ color:"var(--color-text-secondary)", margin:"0 0 20px" }}>{pct}% -- {pct>=80?"Excellent!":pct>=60?"Good work!":"Keep reviewing!"}</p>
+      </div>
+      <div style={{ display:"flex", gap:10, marginBottom:20 }}>
+        <button className="action-btn" onClick={load} style={{ flex:1, background:col, color:"#fff" }}>Try Again</button>
+        <button className="action-btn" onClick={onBack} style={{ flex:1, background:"var(--color-background-secondary)", color:"var(--color-text-primary)", border:"0.5px solid var(--color-border-tertiary)" }}>Home</button>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        {results.map((r,i)=>(
+          <div key={i} style={{ padding:"10px 14px", borderRadius:10, background:r.ok?"#f0fdf4":"#fff7f7", border:`0.5px solid ${r.ok?"#86efac":"#fca5a5"}` }}>
+            <div style={{ display:"flex", gap:8 }}><span>{r.ok?"✓":"✗"}</span><span style={{ fontSize:13, flex:1 }}>{r.q}</span></div>
+            {!r.ok && <p style={{ fontSize:12, color:"#ef4444", margin:"4px 0 0 22px" }}>Correct: {r.correct}</p>}
+            {r.explanation && <p style={{ fontSize:11, color:"var(--color-text-tertiary)", margin:"3px 0 0 22px" }}>{r.explanation}</p>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <Header title="MCQ Practice" subtitle={topicLabel} color={col} onBack={onBack} />
+      <div style={{ display:"flex", justifyContent:"space-between", fontSize:12, color:"var(--color-text-secondary)", marginBottom:8 }}>
+        <span>Question {idx+1} of 10</span><span>Score: {score}/{idx}</span>
+      </div>
+      <div className="progress-bar" style={{ marginBottom:20 }}>
+        <div className="progress-fill" style={{ width:`${(idx/10)*100}%`, background:col }} />
+      </div>
+      <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:14, padding:"20px 18px", marginBottom:16 }}>
+        <p style={{ fontSize:15, fontWeight:500, margin:0, lineHeight:1.6 }}>{q.q}</p>
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:16 }}>
+        {["A","B","C","D"].map(opt=>{
+          let cls = "opt-btn";
+          if (sel) { if (opt===q.answer) cls+=" opt-correct"; else if (opt===sel) cls+=" opt-wrong"; }
+          return (
+            <button key={opt} className={cls} onClick={()=>pick(opt)}>
+              <span style={{ fontWeight:600, color:col, minWidth:20, fontSize:13 }}>{opt}</span>
+              <span style={{ fontSize:14 }}>{q.options?.[opt] || ""}</span>
+            </button>
+          );
+        })}
+      </div>
+      {sel && (
+        <div style={{ padding:"12px 14px", background:sel===q.answer?"#f0fdf4":"#fff7f7", borderRadius:10, border:`0.5px solid ${sel===q.answer?"#86efac":"#fca5a5"}`, marginBottom:14, fontSize:13 }}>
+          <strong style={{ color:sel===q.answer?"#16a34a":"#dc2626" }}>{sel===q.answer?"Correct!":"Incorrect -- answer is "+q.answer}</strong>
+          {q.explanation && <p style={{ margin:"4px 0 0", color:"var(--color-text-secondary)" }}>{q.explanation}</p>}
+        </div>
+      )}
+      {sel && <button className="action-btn" onClick={next} style={{ width:"100%", background:col, color:"#fff" }}>{idx+1>=qs.length?"See Results":"Next Question"}</button>}
+    </div>
+  );
+}
+
+// ── FULL EXAM ────────────────────────────────────────────────────────────────
+function ExamView({ onBack }) {
+  const [phase, setPhase]   = useState("setup");
+  const [qs, setQs]         = useState([]);
+  const [idx, setIdx]       = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [timer, setTimer]   = useState(0);
+  const timerRef            = useRef(null);
+
+  const batches = [
+    { id:"u4", n:19 }, { id:"u5", n:29 }, { id:"u6", n:19 }, { id:"u7", n:25 }, { id:"all", n:4 },
+  ];
+
+  async function start() {
+    setLoading(true); setQs([]); setAnswers({}); setIdx(0); setShowReview(false);
+    const all = [];
+    for (const b of batches) { const q = await genMCQ(b.id, b.n); all.push(...q); }
+    setQs(all); setTimer(0);
+    timerRef.current = setInterval(()=>setTimer(s=>s+1), 1000);
+    setLoading(false); setPhase("exam");
+  }
+
+  function finish() { clearInterval(timerRef.current); setPhase("results"); }
+  const fmt = s => `${Math.floor(s/60).toString().padStart(2,"0")}:${(s%60).toString().padStart(2,"0")}`;
+
+  if (loading) return <div style={{ maxWidth:500,margin:"0 auto",padding:"80px 20px",textAlign:"center" }}><div style={{ fontSize:36,marginBottom:16 }}>⚙️</div><h3>Generating Exam...</h3><p style={{ color:"var(--color-text-secondary)",fontSize:14 }}>Creating 96 questions from all units. Takes ~2 minutes.</p></div>;
+
+  if (phase==="setup") return (
+    <div style={{ maxWidth:500, margin:"0 auto", padding:"28px 20px" }}>
+      <button className="back-btn" onClick={onBack} style={{ marginBottom:24 }}>Back</button>
+      <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:16, padding:"28px 24px" }}>
+        <div style={{ fontSize:36, marginBottom:12 }}>📝</div>
+        <h2 style={{ margin:"0 0 8px", fontSize:20 }}>Full Exam Simulator</h2>
+        <p style={{ color:"var(--color-text-secondary)", fontSize:14, lineHeight:1.6, margin:"0 0 20px" }}>96 questions weighted to exam allocation. No feedback until the end.</p>
+        <div style={{ background:"var(--color-background-secondary)", borderRadius:10, padding:"12px 14px", marginBottom:20 }}>
+          {[["Continuity of Life","u4",19],["Evolution & Diversity","u5",29],["Life & Environment","u6",19],["Animal Behavior","u7",25],["Application","all",4]].map(([l,id,n])=>(
+            <div key={l} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:TOPIC_COLORS[id] }} />
+              <span style={{ fontSize:13 }}>{l}</span>
+              <span style={{ fontSize:11, color:"var(--color-text-tertiary)", marginLeft:"auto" }}>{n} Qs</span>
+            </div>
+          ))}
+        </div>
+        <button className="action-btn" onClick={start} style={{ width:"100%", background:"#1e293b", color:"#fff" }}>Generate and Start Exam</button>
+      </div>
+    </div>
+  );
+
+  if (phase==="exam") {
+    const q = qs[idx]; if (!q) return null;
+    return (
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+          <div>
+            <p style={{ margin:0, fontSize:13, fontWeight:500 }}>Question {idx+1} / {qs.length}</p>
+            <p style={{ margin:0, fontSize:11, color:"var(--color-text-secondary)" }}>{q.section}</p>
+          </div>
+          <div style={{ textAlign:"right" }}>
+            <p style={{ margin:0, fontSize:14, fontWeight:500, fontVariantNumeric:"tabular-nums" }}>{fmt(timer)}</p>
+            <p style={{ margin:0, fontSize:11, color:"var(--color-text-secondary)" }}>{Object.keys(answers).length}/{qs.length} answered</p>
+          </div>
+        </div>
+        <div className="progress-bar" style={{ marginBottom:20 }}>
+          <div className="progress-fill" style={{ width:`${(idx/qs.length)*100}%`, background:"#1e293b" }} />
+        </div>
+        <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:14, padding:"20px 18px", marginBottom:16 }}>
+          <p style={{ fontSize:15, fontWeight:500, margin:0, lineHeight:1.6 }}>{q.q}</p>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:16 }}>
+          {["A","B","C","D"].map(opt=>{
+            const isSel = answers[idx]===opt;
+            return (
+              <button key={opt} className="opt-btn" onClick={()=>setAnswers(a=>({...a,[idx]:opt}))}
+                style={{ borderColor:isSel?"#1e293b":"var(--color-border-tertiary)", background:isSel?"#f1f5f9":"var(--color-background-primary)" }}>
+                <span style={{ fontWeight:600, color:isSel?"#1e293b":"var(--color-text-secondary)", minWidth:20, fontSize:13 }}>{opt}</span>
+                <span style={{ fontSize:14 }}>{q.options?.[opt] || ""}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ display:"flex", gap:10 }}>
+          {idx>0 && <button className="action-btn" onClick={()=>setIdx(i=>i-1)} style={{ background:"var(--color-background-secondary)", color:"var(--color-text-primary)", border:"0.5px solid var(--color-border-tertiary)" }}>Back</button>}
+          {idx<qs.length-1
+            ? <button className="action-btn" onClick={()=>setIdx(i=>i+1)} style={{ flex:1, background:"#1e293b", color:"#fff" }}>Next</button>
+            : <button className="action-btn" onClick={finish} style={{ flex:1, background:"#16a34a", color:"#fff" }}>Submit Exam</button>}
+        </div>
+      </div>
+    );
+  }
+
+  if (phase==="results") {
+    const correct = qs.filter((q,i)=>answers[i]===q.answer).length;
+    const pct = Math.round((correct/qs.length)*100);
+    const bySection = {};
+    qs.forEach((q,i)=>{
+      const sec = q.section||"General";
+      if (!bySection[sec]) bySection[sec]={correct:0,total:0};
+      bySection[sec].total++;
+      if (answers[i]===q.answer) bySection[sec].correct++;
+    });
+    return (
+      <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+        <button className="back-btn" onClick={onBack} style={{ marginBottom:20 }}>Back</button>
+        <div style={{ textAlign:"center", marginBottom:24 }}>
+          <div style={{ fontSize:48, marginBottom:8 }}>{pct>=70?"🏆":pct>=55?"👍":"📚"}</div>
+          <h2 style={{ margin:"0 0 4px", fontSize:22 }}>{correct}/{qs.length} Correct</h2>
+          <p style={{ color:"var(--color-text-secondary)", margin:"0 0 4px" }}>{pct}% -- {fmt(timer)} elapsed</p>
+        </div>
+        <h3 style={{ fontSize:14, fontWeight:500, color:"var(--color-text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>Breakdown by Section</h3>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:16 }}>
+          {Object.entries(bySection).map(([sec,{correct:c,total}])=>{
+            const p = Math.round((c/total)*100);
+            const bc = p>=70?"#16a34a":p>=50?"#d97706":"#dc2626";
+            return (
+              <div key={sec} style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:10, padding:"10px 14px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                  <span style={{ fontSize:13, fontWeight:500 }}>{sec}</span>
+                  <span style={{ fontSize:12, color:bc, fontWeight:500 }}>{c}/{total} ({p}%)</span>
+                </div>
+                <div className="progress-bar"><div className="progress-fill" style={{ width:`${p}%`, background:bc }} /></div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ display:"flex", gap:10, marginBottom:12 }}>
+          <button className="action-btn" onClick={()=>setPhase("setup")} style={{ flex:1, background:"#1e293b", color:"#fff" }}>Retake</button>
+          <button className="action-btn" onClick={()=>setShowReview(r=>!r)} style={{ flex:1, background:"var(--color-background-secondary)", color:"var(--color-text-primary)", border:"0.5px solid var(--color-border-tertiary)" }}>{showReview?"Hide":"Review"} Answers</button>
+        </div>
+        {showReview && qs.map((q,i)=>{
+          const ok = answers[i]===q.answer;
+          return (
+            <div key={i} style={{ padding:"10px 14px", borderRadius:10, background:ok?"#f0fdf4":"#fff7f7", border:`0.5px solid ${ok?"#86efac":"#fca5a5"}`, marginBottom:8 }}>
+              <div style={{ fontSize:13, fontWeight:500, marginBottom:4 }}>{i+1}. {q.q}</div>
+              <div style={{ fontSize:12, color:"#16a34a" }}>Correct: {q.answer}</div>
+              {!ok && <div style={{ fontSize:12, color:"#dc2626" }}>Your answer: {answers[i]||"skipped"}</div>}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return null;
+}
+
+// ── SUMMARY ───────────────────────────────────────────────────────────────────
+function SummaryView({ topic, onBack }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const [text, setText]     = useState("");
+  const [loading, setLoading] = useState(false);
+  const topicLabel = TOPICS.find(t=>t.id===topic)?.label;
+
+  async function load() {
+    setLoading(true); setText("");
+    const res = await callClaude(
+      `Create a study summary for: ${topicLabel}. Include: 1. Core Concepts (5-8 key terms) 2. Key Theories and Models 3. Critical Distinctions 4. Common Exam Points. Use headings and bullet points.\n\n${topicKB(topic)}`
+    );
+    setText(res); setLoading(false);
+  }
+
+  return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <Header title="Quick Summary" subtitle={topicLabel} color={col} onBack={onBack}
+        onAction={load} actionLabel={loading?"Generating...":"Refresh"} />
+      {loading && <Spinner msg="Summarising lecture notes..." />}
+      {!loading && !text && (
+        <div style={{ textAlign:"center", padding:"40px 0", color:"var(--color-text-secondary)" }}>
+          Click Refresh to generate a summary.
+        </div>
+      )}
+      {!loading && text && (
+        <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:14, padding:"20px 18px" }}>
+          <pre style={{ fontFamily:"var(--font-sans)", fontSize:14, lineHeight:1.7, margin:0, whiteSpace:"pre-wrap", wordBreak:"break-word", color:"var(--color-text-primary)" }}>{text}</pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CHAT ─────────────────────────────────────────────────────────────────────
+function ChatView({ topic, onBack }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const topicLabel = TOPICS.find(t=>t.id===topic)?.label;
+  const [msgs, setMsgs]     = useState([{ role:"ai", text:`Hi! Ask me anything about ${topicLabel} from your lecture slides.` }]);
+  const [input, setInput]   = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  const scroll = () => bottomRef.current?.scrollIntoView({ behavior:"smooth" });
+
+  async function send() {
+    const txt = input.trim(); if (!txt||loading) return;
+    setMsgs(m=>[...m,{role:"user",text:txt}]); setInput(""); setLoading(true);
+    const res = await callClaude(
+      `Student question: ${txt}\n\nAnswer based ONLY on this lecture content:\n${topicKB(topic)}`,
+      "You are a biology tutor. Answer strictly based on the provided lecture slides."
+    );
+    setMsgs(m=>[...m,{role:"ai",text:res}]); setLoading(false);
+    setTimeout(scroll, 50);
+  }
+
+  const suggestions = ["Mitosis vs meiosis?","Explain Hardy-Weinberg","Batesian vs Mullerian mimicry?","Aplysia habituation mechanism?","fru gene in Drosophila?","Classical vs operant conditioning?"];
+
+  return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px", display:"flex", flexDirection:"column", height:"100vh", boxSizing:"border-box" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, flexShrink:0 }}>
+        <button className="back-btn" onClick={onBack}>Back</button>
+        <div style={{ flex:1 }}>
+          <h2 style={{ margin:0, fontSize:17, fontWeight:500 }}>Ask Claude</h2>
+          <p style={{ margin:0, fontSize:12, color:"var(--color-text-secondary)" }}>Strictly based on lecture content</p>
+        </div>
+      </div>
+      {msgs.length<=1 && (
+        <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:14, flexShrink:0 }}>
+          {suggestions.slice(0,4).map(sg=>(
+            <button key={sg} className="chip" onClick={()=>setInput(sg)}
+              style={{ background:"var(--color-background-secondary)", color:"var(--color-text-secondary)", borderColor:"var(--color-border-tertiary)", fontSize:11 }}>{sg}</button>
+          ))}
+        </div>
+      )}
+      <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:12, marginBottom:14 }}>
+        {msgs.map((m,i)=><div key={i} className={m.role==="user"?"chat-bubble-user":"chat-bubble-ai"}>{m.text}</div>)}
+        {loading && <div className="chat-bubble-ai" style={{ color:"var(--color-text-secondary)" }}>Thinking...</div>}
+        <div ref={bottomRef} />
+      </div>
+      <div style={{ display:"flex", gap:8, flexShrink:0 }}>
+        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()}
+          placeholder="Ask about the lecture content..."
+          style={{ flex:1, padding:"10px 14px", borderRadius:10, border:"0.5px solid var(--color-border-secondary)", background:"var(--color-background-primary)", fontSize:14, color:"var(--color-text-primary)" }} />
+        <button className="action-btn" onClick={send} disabled={loading||!input.trim()} style={{ background:col, color:"#fff", padding:"10px 16px" }}>Send</button>
+      </div>
+    </div>
+  );
+}
+
+
+// ── STUDY ALL ────────────────────────────────────────────────────────────────
+function StudyAllView({ topic, onBack }) {
+  const col = TOPIC_COLORS[topic] || "#6366f1";
+  const topicLabel = TOPICS.find(t=>t.id===topic)?.label || "All Topics";
+  const subsections = getSubsections(topic);
+  const [phase, setPhase]     = useState("setup");
+  const [allQ, setAllQ]       = useState([]);
+  const [progress, setProgress] = useState({ done:0, total:0, current:"" });
+  const [qIdx, setQIdx]       = useState(0);
+  const [sel, setSel]         = useState(null);
+  const [score, setScore]     = useState(0);
+  const [results, setResults] = useState([]);
+  const abortRef              = useRef(false);
+
+  async function startGeneration() {
+    abortRef.current = false;
+    setPhase("generating"); setAllQ([]); setQIdx(0); setSel(null); setScore(0); setResults([]);
+    setProgress({ done:0, total:subsections.length, current:"" });
+    let acc = [];
+    for (let i = 0; i < subsections.length; i++) {
+      if (abortRef.current) break;
+      const sub = subsections[i];
+      setProgress({ done:i, total:subsections.length, current:sub.name });
+      try {
+        const raw = await callClaude(
+          `Generate exactly 8 multiple-choice questions covering ONLY this content.\nSECTION: ${sub.name}\nCONTENT: ${sub.focus}\nReturn ONLY valid JSON (no markdown): [{"q":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"answer":"A","section":"${sub.name}","explanation":"..."}]`,
+          "Return only a valid JSON array. No markdown, no explanation outside the JSON."
+        );
+        const match = raw.match(/\[[\s\S]*\]/);
+        if (match) { const parsed = JSON.parse(match[0]); acc = [...acc, ...parsed]; setAllQ([...acc]); }
+      } catch(e) { console.error("Section failed:", sub.name, e); }
+      setProgress({ done:i+1, total:subsections.length, current:sub.name });
+      await new Promise(r => setTimeout(r, 800));
+    }
+    if (acc.length === 0) { setPhase("setup"); return; }
+    setPhase("quiz");
+  }
+
+  function pick(opt) {
+    if (sel) return;
+    const q = allQ[qIdx];
+    const ok = opt === q.answer;
+    setSel(opt);
+    if (ok) setScore(s=>s+1);
+    setResults(r=>[...r,{ q:q.q, sel:opt, correct:q.answer, ok, section:q.section, explanation:q.explanation }]);
+  }
+
+  function next() {
+    if (qIdx+1>=allQ.length) setPhase("results");
+    else { setQIdx(i=>i+1); setSel(null); }
+  }
+
+  if (phase==="setup") return (
+    <div style={{ maxWidth:600, margin:"0 auto", padding:"28px 20px" }}>
+      <button className="back-btn" onClick={onBack} style={{ marginBottom:20 }}>Back</button>
+      <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:16, padding:"28px 24px" }}>
+        <div style={{ fontSize:36, marginBottom:12 }}>🔬</div>
+        <h2 style={{ margin:"0 0 8px", fontSize:20 }}>Study All: {topicLabel}</h2>
+        <p style={{ color:"var(--color-text-secondary)", fontSize:14, lineHeight:1.6, margin:"0 0 20px" }}>
+          {subsections.length} sections, ~8 questions each = up to {subsections.length*8} questions with instant feedback.
+        </p>
+        <div style={{ background:"var(--color-background-secondary)", borderRadius:10, padding:"12px 14px", marginBottom:20 }}>
+          {subsections.map((s,i)=>(
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+              <div style={{ width:6, height:6, borderRadius:"50%", background:col }} />
+              <span style={{ fontSize:12, color:"var(--color-text-secondary)" }}>{s.name}</span>
+            </div>
+          ))}
+        </div>
+        <button className="action-btn" onClick={startGeneration} style={{ width:"100%", background:col, color:"#fff" }}>Start Study All</button>
+      </div>
+    </div>
+  );
+
+  if (phase==="generating") {
+    const pct = progress.total>0 ? Math.round((progress.done/progress.total)*100) : 0;
+    return (
+      <div style={{ maxWidth:480, margin:"0 auto", padding:"60px 20px", textAlign:"center" }}>
+        <div style={{ fontSize:36, marginBottom:16 }}>🔬</div>
+        <h3 style={{ margin:"0 0 8px" }}>Generating Questions</h3>
+        <p style={{ color:"var(--color-text-secondary)", fontSize:14, marginBottom:24 }}>Section {progress.done} of {progress.total}...</p>
+        <div className="progress-bar" style={{ maxWidth:300, margin:"0 auto 10px" }}>
+          <div className="progress-fill" style={{ width:`${pct}%`, background:col }} />
+        </div>
+        <p style={{ fontSize:12, color:"var(--color-text-tertiary)", marginBottom:12 }}>{pct}% complete</p>
+        {progress.current && <div style={{ background:"var(--color-background-secondary)", borderRadius:10, padding:"10px 14px", fontSize:13, color:"var(--color-text-secondary)" }}>Generating: <strong style={{ color:"var(--color-text-primary)" }}>{progress.current}</strong></div>}
+        {allQ.length>0 && <p style={{ fontSize:12, color:"var(--color-text-tertiary)", marginTop:12 }}>{allQ.length} questions ready</p>}
+      </div>
+    );
+  }
+
+  if (phase==="quiz") {
+    const q = allQ[qIdx]; if (!q) return null;
+    return (
+      <div style={{ maxWidth:620, margin:"0 auto", padding:"28px 20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:16 }}>
+          <div>
+            <p style={{ margin:0, fontSize:13, fontWeight:500 }}>Question {qIdx+1} / {allQ.length}</p>
+            <p style={{ margin:0, fontSize:11, color:"var(--color-text-tertiary)" }}>{q.section}</p>
+          </div>
+          <div style={{ textAlign:"right" }}>
+            <p style={{ margin:0, fontSize:13, fontWeight:500, color:col }}>{score} correct</p>
+            <p style={{ margin:0, fontSize:11, color:"var(--color-text-tertiary)" }}>{qIdx>0?Math.round((score/qIdx)*100):0}% so far</p>
+          </div>
+        </div>
+        <div className="progress-bar" style={{ marginBottom:16 }}>
+          <div className="progress-fill" style={{ width:`${Math.round((qIdx/allQ.length)*100)}%`, background:col }} />
+        </div>
+        <div style={{ marginBottom:12 }}>
+          <span style={{ fontSize:11, fontWeight:500, padding:"3px 10px", borderRadius:6, background:"var(--color-background-secondary)", color:"var(--color-text-secondary)" }}>{q.section}</span>
+        </div>
+        <div style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:14, padding:"20px 18px", marginBottom:16 }}>
+          <p style={{ fontSize:15, fontWeight:500, margin:0, lineHeight:1.65 }}>{q.q}</p>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:16 }}>
+          {["A","B","C","D"].map(opt=>{
+            let cls = "opt-btn";
+            if (sel) { if (opt===q.answer) cls+=" opt-correct"; else if (opt===sel) cls+=" opt-wrong"; }
+            return (
+              <button key={opt} className={cls} onClick={()=>pick(opt)}>
+                <span style={{ fontWeight:600, color:sel?(opt===q.answer?"#16a34a":opt===sel?"#dc2626":"var(--color-text-tertiary)"):col, minWidth:20, fontSize:13 }}>{opt}</span>
+                <span style={{ fontSize:14 }}>{q.options?.[opt]||""}</span>
+              </button>
+            );
+          })}
+        </div>
+        {sel && (
+          <div style={{ padding:"12px 14px", borderRadius:10, marginBottom:14, fontSize:13, lineHeight:1.55, background:sel===q.answer?"#f0fdf4":"#fff7f7", border:`0.5px solid ${sel===q.answer?"#86efac":"#fca5a5"}` }}>
+            <strong style={{ color:sel===q.answer?"#16a34a":"#dc2626" }}>{sel===q.answer?"Correct!":"Incorrect -- answer is "+q.answer}</strong>
+            {q.explanation && <p style={{ margin:"4px 0 0", color:"var(--color-text-secondary)" }}>{q.explanation}</p>}
+          </div>
+        )}
+        {sel && <button className="action-btn" onClick={next} style={{ width:"100%", background:col, color:"#fff", fontSize:15, padding:12 }}>{qIdx+1>=allQ.length?"See Results":"Next Question"}</button>}
+      </div>
+    );
+  }
+
+  if (phase==="results") {
+    const total = allQ.length;
+    const pct = Math.round((score/total)*100);
+    const bySection = {};
+    results.forEach(r=>{
+      if (!bySection[r.section]) bySection[r.section]={correct:0,total:0,wrong:[]};
+      bySection[r.section].total++;
+      if (r.ok) bySection[r.section].correct++;
+      else bySection[r.section].wrong.push(r.q);
+    });
+    return (
+      <div style={{ maxWidth:620, margin:"0 auto", padding:"28px 20px" }}>
+        <button className="back-btn" onClick={onBack} style={{ marginBottom:20 }}>Back</button>
+        <div style={{ textAlign:"center", padding:"20px 0 24px" }}>
+          <div style={{ fontSize:52, marginBottom:10 }}>{pct>=80?"🏆":pct>=65?"👍":pct>=50?"📖":"💪"}</div>
+          <h2 style={{ margin:"0 0 4px", fontSize:26, fontWeight:700 }}>{score} / {total}</h2>
+          <p style={{ margin:"0 0 4px", fontSize:16, color:col, fontWeight:500 }}>{pct}%</p>
+          <p style={{ margin:0, color:"var(--color-text-secondary)", fontSize:14 }}>{pct>=80?"Excellent -- thoroughly covered!":pct>=65?"Good work! Review weak sections.":pct>=50?"Keep going -- focus on weak sections.":"More review needed -- read summaries first."}</p>
+        </div>
+        <p style={{ fontSize:12, fontWeight:500, color:"var(--color-text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:12 }}>Breakdown by Section</p>
+        <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:24 }}>
+          {Object.entries(bySection).map(([section,data])=>{
+            const sp = Math.round((data.correct/data.total)*100);
+            const bc = sp>=80?"#16a34a":sp>=60?"#d97706":"#dc2626";
+            return (
+              <div key={section} style={{ background:"var(--color-background-primary)", border:"0.5px solid var(--color-border-tertiary)", borderRadius:10, padding:"12px 14px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
+                  <span style={{ fontSize:13, fontWeight:500 }}>{section}</span>
+                  <span style={{ fontSize:12, fontWeight:500, color:bc }}>{data.correct}/{data.total} ({sp}%)</span>
+                </div>
+                <div className="progress-bar"><div className="progress-fill" style={{ width:`${sp}%`, background:bc }} /></div>
+                {data.wrong.length>0 && data.wrong.map((wq,i)=>(
+                  <p key={i} style={{ fontSize:11, color:"var(--color-text-secondary)", margin:"4px 0 0", paddingLeft:10, borderLeft:"2px solid #fca5a5" }}>{wq.length>80?wq.slice(0,80)+"...":wq}</p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ display:"flex", gap:10 }}>
+          <button className="action-btn" onClick={()=>setPhase("setup")} style={{ flex:1, background:col, color:"#fff" }}>Try Again</button>
+          <button className="action-btn" onClick={onBack} style={{ flex:1, background:"var(--color-background-secondary)", color:"var(--color-text-primary)", border:"0.5px solid var(--color-border-tertiary)" }}>Home</button>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
+// ── APP ROOT ─────────────────────────────────────────────────────────────────
+
+function App() {
+  const [view,  setView]  = useState("home");
+  const [topic, setTopic] = useState("all");
+
+  return (
+    <div style={{ fontFamily:"var(--font-sans)", minHeight:"100vh", padding:"0 0 60px" }}>
+      <style>{CSS}</style>
+      {view==="home"       && <HomeView view={view} setView={setView} topic={topic} setTopic={setTopic} />}
+      {view==="studyall"   && <StudyAllView   topic={topic} onBack={()=>setView("home")} />}
+      {view==="flashcards" && <FlashcardsView topic={topic} onBack={()=>setView("home")} />}
+      {view==="mcq"        && <MCQView        topic={topic} onBack={()=>setView("home")} />}
+      {view==="exam"       && <ExamView                     onBack={()=>setView("home")} />}
+      {view==="summary"    && <SummaryView    topic={topic} onBack={()=>setView("home")} />}
+      {view==="chat"       && <ChatView       topic={topic} onBack={()=>setView("home")} />}
+    </div>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
